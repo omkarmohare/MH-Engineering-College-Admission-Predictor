@@ -1,0 +1,502 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ML College Prediction</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>College Admission Prediction</h1>
+        <form id="predictionForm">
+            <label for="rank">Rank:</label>
+            <input type="text" id="rank" name="rank" step="0.01" required><br><br>
+
+            <label for="percentile">Percentile:</label>
+            <input type="text" id="percentile" name="percentile" step="0.01" required><br><br>
+
+            <label for="gender">Gender (0 for Male, 1 for Female):</label>
+            <input type="text" id="gender" name="gender" required><br><br>
+
+            <label for="category">Category (0: General, 1: SC 2:ST, 3: OBC 4:VJNT):</label>
+            <input type="text" id="category" name="category" required><br><br>
+
+            <button type="submit">Predict</button>
+        </form>
+        <h2>Prediction (College Name): <span id="predictionResult">---</span></h2>
+    </div>
+
+    <script>
+        document.getElementById('predictionForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            
+            // Collect form data
+            const formData = {
+                rank: document.getElementById('rank').value,
+                percentile: document.getElementById('percentile').value,
+                gender: document.getElementById('gender').value,
+                category: document.getElementById('category').value
+            };
+
+            // Send data to the Flask backend
+            const response = await fetch('/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+
+            const result = await response.json();
+
+            // Display the prediction result (college_name)
+            document.getElementById('predictionResult').innerText = result.prediction;
+        });
+    </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ML College Prediction</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>College Admission Prediction</h1>
+        <form id="predictionForm">
+            <label for="rank">Rank:</label>
+            <input type="number" id="rank" name="rank" step="0.01" required><br><br>
+
+            <label for="percentile">Percentile:</label>
+            <input type="number" id="percentile" name="percentile" step="0.01" required><br><br>
+
+            <label for="gender">Gender (0 for Male, 1 for Female):</label>
+            <input type="number" id="gender" name="gender" required><br><br>
+
+            <label for="category">Category (0: General, 1: SC/ST, 2: OBC):</label>
+            <input type="number" id="category" name="category" required><br><br>
+
+            <button type="submit">Predict</button>
+        </form>
+        <h2>Top 5 Predicted Colleges:</h2>
+        <ol id="predictionResult">
+            <li>---</li>
+            <li>---</li>
+            <li>---</li>
+            <li>---</li>
+            <li>---</li>
+        </ol>
+    </div>
+
+    <script>
+        document.getElementById('predictionForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            
+            // Collect form data
+            const formData = {
+                rank: document.getElementById('rank').value,
+                percentile: document.getElementById('percentile').value,
+                gender: document.getElementById('gender').value,
+                category: document.getElementById('category').value
+            };
+
+            // Send data to the Flask backend
+            const response = await fetch('/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+
+            const result = await response.json();
+
+            // Update the list with the top 5 predicted colleges
+            const top5 = result.top_5_colleges;
+            const predictionResult = document.getElementById('predictionResult');
+            predictionResult.innerHTML = '';
+            top5.forEach(college => {
+                const listItem = document.createElement('li');
+                listItem.textContent = college;
+                predictionResult.appendChild(listItem);
+            });
+        });
+    </script>
+</body>
+</html> --> 
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College Admission Predictor</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #f1c6d5, #a7c6e7);
+            color: #333;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            color: #5c4d7d;
+            animation: fadeIn 1s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            animation: slideIn 0.5s ease-in-out;
+        }
+        @keyframes slideIn {
+            from { transform: translateY(-30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        form {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            font-weight: bold;
+            margin-top: 10px;
+            display: block;
+            color: #5c4d7d;
+        }
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: #f4f4f4;
+            color: #333;
+            transition: background 0.3s, transform 0.3s;
+        }
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        select:focus {
+            background: #e2e2e2;
+            transform: scale(1.02);
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #5c4d7d;
+            border: none;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        button:hover {
+            background-color: #4b3c6d;
+            transform: translateY(-2px);
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px;
+            border-radius: 5px;
+            animation: fadeIn 0.5s ease-in;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>MHT-CET College Admission Predictor</h1>
+    <form id="prediction-form">
+        <label for="rank">MHT-CET Rank:</label>
+        <input type="number" id="rank" name="rank" required>
+
+        <label for="percentile">MHT-CET Percentile:</label>
+        <input type="number" id="percentile" name="percentile" required>
+
+        <label for="gender">Gender:(Male:0,Female:1)</label>
+        <input type="text" id="gender" name="gender" required>
+
+        <label for="category">Category:</label>
+        <select id="category" name="category" required>
+            <option value="0">OPEN</option>
+            <option value="1">SC</option>
+            <option value="2">ST</option>
+            <option value="3">VJNT</option>
+            
+        </select>
+
+        <button type="submit">Predict</button>
+    </form>
+
+    <div id="result"></div>
+</div>
+
+<script>
+    document.getElementById('prediction-form').addEventListener('submit', function (e) {
+        e.preventDefault(); // Prevent form submission
+
+        // Get form data
+        const rank = document.getElementById('rank').value;
+        const percentile = document.getElementById('percentile').value;
+        const gender = document.getElementById('gender').value;
+        const category = document.getElementById('category').value;
+
+        // Prepare data for the request
+        const data = {
+            rank: parseInt(rank),
+            percentile: parseInt(percentile),
+            gender: gender,
+            category: category
+        };
+
+        // Send POST request to the Flask server
+        fetch('http://127.0.0.1:5000/predict', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Display the prediction result
+            document.getElementById('result').innerText = `Predicted College: ${data.predicted_college}`;
+            document.getElementById('result').style.opacity = 1; // Reset opacity
+            document.getElementById('result').style.animation = 'fadeIn 0.5s ease-in'; // Add animation
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.getElementById('result').innerText = 'An error occurred while making the prediction.';
+        });
+    });
+</script>
+
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College Admission Predictor</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Styles (same as before, trimmed for brevity) */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #f1c6d5, #a7c6e7);
+            color: #333;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            color: #5c4d7d;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+        form {
+            padding: 20px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.9);
+        }
+        label {
+            font-weight: bold;
+            margin-top: 10px;
+            display: block;
+            color: #5c4d7d;
+        }
+        input,
+        select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: #f4f4f4;
+        }
+        input:focus,
+        select:focus {
+            background: #e2e2e2;
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #5c4d7d;
+            border: none;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #4b3c6d;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h2><i class="fas fa-university"></i> MHT-CET College Admission Predictor</h2>
+</header>
+
+<div class="container">
+    <h1>MHT-CET College Admission Predictor</h1>
+    <form id="prediction-form">
+        <label for="rank">MHT-CET Rank:</label>
+        <input type="number" id="rank" name="rank" min="0" required>
+
+        <label for="percentile">MHT-CET Percentile:</label>
+        <input type="number" id="percentile" name="percentile" min="0" max="100" step="0.01" required>
+        <small style="color: gray;">Enter a value between 0 and 100 (up to 2 decimal places).</small>
+
+        <label for="gender">Gender:</label>
+        <input type="number" id="gender" name="gender" min="0" max="1" required>
+        <small style="color: gray;">Enter 0 for Male or 1 for Female. No other values allowed.</small>
+
+        <label for="category">Category:</label>
+        <select id="category" name="category" required>
+            <option value="0">OPEN</option>
+            <option value="1">SC</option>
+            <option value="2">ST</option>
+            <option value="3">VJ</option>
+            <option value="3">OBC</option>
+            <option value="0">NT1</option>
+            <option value="0">NT2</option>
+            <option value="0">NT3</option>
+            <option value="0">EWS</option>
+            <option value="0">PWDOPEN</option>
+            <option value="0">PWDSC</option>
+            <option value="0">PWDOBC</option>
+            <option value="0">TFWS</option>
+            <option value="0">DEFOPEN</option>
+            <option value="0">DEFOBC</option>
+            <option value="0">DEFSC</option>
+            <option value="0">DEFOPEN</option>
+            <option value="0">ORPHAN</option>
+        </select>
+
+        <button type="submit">Predict</button>
+    </form>
+
+    <div id="result"></div>
+</div>
+
+<footer>
+    <p>&copy; 2024 College Admission Predictor. All Rights Reserved.</p>
+</footer>
+
+<script>
+    document.getElementById('prediction-form').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        // Get input values
+        const rank = document.getElementById('rank').value;
+        const percentile = document.getElementById('percentile').value;
+        const gender = document.getElementById('gender').value;
+        const category = document.getElementById('category').value;
+
+        // Validate gender input
+        if (gender !== '0' && gender !== '1') {
+            alert("Invalid input for gender. Please enter 0 for Male or 1 for Female.");
+            return;
+        }
+
+        // Clear previous result
+        const resultElement = document.getElementById('result');
+        resultElement.innerText = 'Fetching prediction...';
+
+        // Prepare request payload
+        const data = {
+            rank: parseInt(rank),
+            percentile: parseFloat(percentile),
+            gender: parseInt(gender),
+            category: parseInt(category),
+            timestamp: new Date().getTime() // Add timestamp to ensure fresh request
+        };
+
+        // Send POST request to the server
+        fetch('http://127.0.0.1:5000/predict', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok ' + response.statusText);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.error) {
+                resultElement.innerText = 'Error: ' + data.error;
+            } else {
+                resultElement.innerText = `Predicted College: ${data.predicted_college}`;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            resultElement.innerText = 'An error occurred while making the prediction.';
+        });
+    });
+</script>
+
+
+
+
+</body>
+</html>
